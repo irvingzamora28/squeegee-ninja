@@ -190,4 +190,38 @@ export class SQLiteProvider implements IDatabaseProvider {
   async deleteBooking(id: number): Promise<void> {
     return this.bookingModel.delete(id)
   }
+
+  // Availability Rules (recurring weekly)
+  async getAvailabilityRulesByService(service_id: number): Promise<AvailabilityRule[]> {
+    return this.availabilityRuleModel.getByService(service_id)
+  }
+  async insertAvailabilityRule(data: Omit<AvailabilityRule, 'id' | 'created_at'>): Promise<number> {
+    return this.availabilityRuleModel.insert(data)
+  }
+  async updateAvailabilityRule(
+    id: number,
+    updates: Partial<Omit<AvailabilityRule, 'id' | 'created_at'>>
+  ): Promise<void> {
+    return this.availabilityRuleModel.update(id, updates)
+  }
+  async deleteAvailabilityRule(id: number): Promise<void> {
+    return this.availabilityRuleModel.delete(id)
+  }
+
+  // Holidays (date exceptions)
+  async getHolidaysByService(service_id: number): Promise<Holiday[]> {
+    return this.holidayModel.getByService(service_id)
+  }
+  async insertHoliday(data: Omit<Holiday, 'id' | 'created_at'>): Promise<number> {
+    return this.holidayModel.insert(data)
+  }
+  async updateHoliday(
+    id: number,
+    updates: Partial<Omit<Holiday, 'id' | 'created_at'>>
+  ): Promise<void> {
+    return this.holidayModel.update(id, updates)
+  }
+  async deleteHoliday(id: number): Promise<void> {
+    return this.holidayModel.delete(id)
+  }
 }

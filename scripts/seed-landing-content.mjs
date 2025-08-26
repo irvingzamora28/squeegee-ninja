@@ -11,7 +11,12 @@ const __dirname = path.dirname(__filename)
 // Load env: .env.local first (overrides), then .env
 try {
   dotenv.config({ path: path.join(process.cwd(), '.env.local') })
-} catch {}
+} catch (e) {
+  // .env.local is optional in many environments; only warn in debug mode
+  if (process.env.DEBUG) {
+    console.warn('[seed] Optional .env.local could not be loaded:', e)
+  }
+}
 dotenv.config()
 
 const TABLE_PREFIX = process.env.TABLE_PREFIX || 'allset_'
