@@ -12,6 +12,7 @@ const SELECT_COLUMNS = `
   assistant_enabled,
   booking_widget_enabled,
   site_language,
+  landing_content,
   created_at,
   updated_at
 `
@@ -31,8 +32,8 @@ export class SQLiteSiteSettingsModel implements ISiteSettingsModel {
     // Ensure a single row exists if schema seed didn't run
     this.db
       .prepare(
-        `INSERT OR IGNORE INTO ${SITE_SETTINGS_TABLE} (id, whatsapp_enabled, whatsapp_phone, whatsapp_message, whatsapp_position, assistant_enabled, booking_widget_enabled, site_language)
-         VALUES (1, 0, '', '', 'bottom-right', 0, 1, 'en-us')`
+        `INSERT OR IGNORE INTO ${SITE_SETTINGS_TABLE} (id, whatsapp_enabled, whatsapp_phone, whatsapp_message, whatsapp_position, assistant_enabled, booking_widget_enabled, site_language, landing_content)
+         VALUES (1, 0, '', '', 'bottom-right', 0, 1, 'en-us', NULL)`
       )
       .run()
 
@@ -76,6 +77,10 @@ export class SQLiteSiteSettingsModel implements ISiteSettingsModel {
     if (typeof patch.site_language !== 'undefined') {
       fields.push('site_language = ?')
       values.push(patch.site_language)
+    }
+    if (typeof patch.landing_content !== 'undefined') {
+      fields.push('landing_content = ?')
+      values.push(patch.landing_content as unknown as string)
     }
 
     if (fields.length > 0) {

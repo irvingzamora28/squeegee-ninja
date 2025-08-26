@@ -42,10 +42,14 @@ export class SQLiteProvider implements IDatabaseProvider {
         .prepare(`PRAGMA table_info(allset_site_settings)`) // TABLE_PREFIX assumed default in SQLite file
         .all() as { name: string }[]
       const hasBookingEnabled = cols.some((c) => c.name === 'booking_widget_enabled')
+      const hasLandingContent = cols.some((c) => c.name === 'landing_content')
       if (!hasBookingEnabled) {
         this.db.exec(
           `ALTER TABLE allset_site_settings ADD COLUMN booking_widget_enabled INTEGER NOT NULL DEFAULT 1`
         )
+      }
+      if (!hasLandingContent) {
+        this.db.exec(`ALTER TABLE allset_site_settings ADD COLUMN landing_content TEXT`)
       }
     } catch (e) {
       // Do not block app startup on migration helper
@@ -87,21 +91,17 @@ export class SQLiteProvider implements IDatabaseProvider {
   async getAllTemplateData(): Promise<EmailTemplateDataInstance[]> {
     return this.emailTemplateDataModel.getAll()
   }
-
   async getTemplateDataById(id: number): Promise<EmailTemplateDataInstance | null> {
     return this.emailTemplateDataModel.getById(id)
   }
-
   async getTemplateDataByTemplate(template: string): Promise<EmailTemplateDataInstance[]> {
     return this.emailTemplateDataModel.getByTemplate(template)
   }
-
   async insertTemplateData(
     instance: Omit<EmailTemplateDataInstance, 'id' | 'created_at' | 'updated_at'>
   ): Promise<number> {
     return this.emailTemplateDataModel.insert(instance)
   }
-
   async updateTemplateData(
     id: number,
     updates: Partial<Omit<EmailTemplateDataInstance, 'id' | 'created_at' | 'updated_at'>>
@@ -189,39 +189,5 @@ export class SQLiteProvider implements IDatabaseProvider {
   }
   async deleteBooking(id: number): Promise<void> {
     return this.bookingModel.delete(id)
-  }
-
-  // Availability Rules (recurring weekly)
-  async getAvailabilityRulesByService(service_id: number): Promise<AvailabilityRule[]> {
-    return this.availabilityRuleModel.getByService(service_id)
-  }
-  async insertAvailabilityRule(data: Omit<AvailabilityRule, 'id' | 'created_at'>): Promise<number> {
-    return this.availabilityRuleModel.insert(data)
-  }
-  async updateAvailabilityRule(
-    id: number,
-    updates: Partial<Omit<AvailabilityRule, 'id' | 'created_at'>>
-  ): Promise<void> {
-    return this.availabilityRuleModel.update(id, updates)
-  }
-  async deleteAvailabilityRule(id: number): Promise<void> {
-    return this.availabilityRuleModel.delete(id)
-  }
-
-  // Holidays (date exceptions)
-  async getHolidaysByService(service_id: number): Promise<Holiday[]> {
-    return this.holidayModel.getByService(service_id)
-  }
-  async insertHoliday(data: Omit<Holiday, 'id' | 'created_at'>): Promise<number> {
-    return this.holidayModel.insert(data)
-  }
-  async updateHoliday(
-    id: number,
-    updates: Partial<Omit<Holiday, 'id' | 'created_at'>>
-  ): Promise<void> {
-    return this.holidayModel.update(id, updates)
-  }
-  async deleteHoliday(id: number): Promise<void> {
-    return this.holidayModel.delete(id)
   }
 }
