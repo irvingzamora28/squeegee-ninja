@@ -110,6 +110,7 @@
     ],
     "submitLabel": "Enviar Mensaje",
     "successMessage": "¡Gracias por contactarnos! ¡Te responderemos a la brevedad!",
+    "showContactForm": false,
     "contactInfo": {
       "title": "Información de Contacto",
       "phone": {

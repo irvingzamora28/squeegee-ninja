@@ -263,6 +263,7 @@ export interface ContactSection {
   successMessage: string
   contactInfo?: ContactInfo
   emergencyService?: EmergencyService
+  showContactForm?: boolean
 }
 
 export interface StatsSection {

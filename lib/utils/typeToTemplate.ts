@@ -165,6 +165,7 @@ export const createProductTemplate = (): Partial<ProductSaaSLandingContent> => {
         email: { label: 'Email', address: '', responseTime: '' },
         location: { label: 'Location', address: ['Address line 1', 'Address line 2'] },
       },
+      showContactForm: true,
     },
     testimonials: {
       title: 'Testimonials section title',
@@ -302,6 +303,7 @@ export const createYouTubeTemplate = (): Partial<YouTubeLandingContent> => {
         email: { label: 'Email', address: '', responseTime: '' },
         location: { label: 'Location', address: ['Address line 1', 'Address line 2'] },
       },
+      showContactForm: true,
     },
   }
 }
@@ -486,6 +488,7 @@ export const createServicesTemplate = (): Partial<ServicesLandingContent> => {
         email: { label: 'Email', address: '', responseTime: '' },
         location: { label: 'Location', address: ['Address line 1', 'Address line 2'] },
       },
+      showContactForm: true,
     },
   }
 }
