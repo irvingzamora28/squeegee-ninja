@@ -45,6 +45,8 @@ CREATE TABLE IF NOT EXISTS allset_site_settings (
   booking_widget_enabled INTEGER NOT NULL DEFAULT 1, -- 0=false, 1=true
   -- i18n site language (e.g., 'en-us', 'es-mx')
   site_language TEXT NOT NULL DEFAULT 'en-us',
+  -- Landing content JSON (TEXT stores stringified JSON)
+  landing_content TEXT,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -53,11 +55,11 @@ CREATE TABLE IF NOT EXISTS allset_site_settings (
 INSERT OR IGNORE INTO allset_site_settings (
   id,
   whatsapp_enabled, whatsapp_phone, whatsapp_message, whatsapp_position,
-  assistant_enabled, booking_widget_enabled, site_language
+  assistant_enabled, booking_widget_enabled, site_language, landing_content
 ) VALUES (
   1,
   1, '+521234567890', 'Hello, I am interested in your services!', 'bottom-right',
-  0, 1, 'es-mx'
+  0, 1, 'es-mx', NULL
 );
 
 -- ==========================================

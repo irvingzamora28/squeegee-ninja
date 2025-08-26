@@ -6,7 +6,6 @@ import siteMetadata from '@/data/siteMetadata'
 import { formatDate } from 'pliny/utils/formatDate'
 import Image from 'next/image'
 import landingDemoImage from '../public/static/images/landing-demo.jpeg'
-import dataLandingContent from '@/data/landingContent.json'
 import { sortPosts, allCoreContent } from 'pliny/utils/contentlayer'
 import { allBlogs } from 'contentlayer/generated'
 import { HiCheckCircle } from 'react-icons/hi2'
@@ -14,8 +13,7 @@ import { iconMap, getIconComponent } from '@/lib/utils/iconMap'
 import { useEmailSubscription } from '@/lib/useEmailSubscription'
 import { useState, useRef, useEffect } from 'react'
 import { ProductSaaSLandingContent } from './allset/landing-content/types'
-
-const landingContent = dataLandingContent as unknown as ProductSaaSLandingContent
+import { useLandingContent } from '@/lib/useLandingContent'
 
 import { ContactFormData, useContactSubmission } from '@/lib/useContactSubmission'
 
@@ -334,7 +332,12 @@ const BlogPostsSection = ({ posts }) => (
 export default function Home() {
   const sortedPosts = sortPosts(allBlogs)
   const posts = allCoreContent(sortedPosts)
-  const { hero, mainFeatures, features, cta, pricing, contact } = landingContent
+  const { content, loading, error } = useLandingContent<ProductSaaSLandingContent>()
+
+  if (loading) return null
+  if (error || !content) return null
+
+  const { hero, mainFeatures, features, cta, pricing, contact } = content
 
   return (
     <div className="mx-auto max-w-3xl px-4 sm:px-6 xl:max-w-10/12 xl:px-0">

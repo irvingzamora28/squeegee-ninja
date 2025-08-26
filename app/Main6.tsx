@@ -3,7 +3,6 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { YouTubeLandingContent } from './allset/landing-content/types'
-import dataLandingContent from '@/data/landingContent.json'
 import {
   ChannelHero,
   FeaturedVideos,
@@ -12,11 +11,13 @@ import {
   ChannelCta,
   ContactSection,
 } from '../components/Main6'
-
-const landingContent = dataLandingContent as unknown as YouTubeLandingContent
+import { useLandingContent } from '@/lib/useLandingContent'
 
 const Main6 = () => {
-  const { channelInfo, featuredVideos, playlists, cta, about, contact, seo } = landingContent
+  const { content, loading, error } = useLandingContent<YouTubeLandingContent>()
+  if (loading) return null
+  if (error || !content) return null
+  const { channelInfo, featuredVideos, playlists, cta, about, contact, seo } = content
 
   return (
     <div className="min-h-screen overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white">

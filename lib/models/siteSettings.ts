@@ -14,6 +14,8 @@ export type SiteSettings = {
   booking_widget_enabled: boolean
   // i18n
   site_language: string
+  // Landing content JSON (stored in DB as JSON/JSONB or TEXT)
+  landing_content?: unknown
   // timestamps as ISO strings
   created_at?: string
   updated_at?: string
@@ -37,6 +39,7 @@ export type SiteSettingsDBRow = {
   assistant_enabled: number
   booking_widget_enabled: number
   site_language: string
+  landing_content?: unknown
   created_at?: string
   updated_at?: string
 }
@@ -52,6 +55,7 @@ export function mapSiteSettingsRow(row: SiteSettingsDBRow): SiteSettings {
     assistant_enabled: !!row.assistant_enabled,
     booking_widget_enabled: !!row.booking_widget_enabled,
     site_language: row.site_language || 'en-us',
+    landing_content: row.landing_content,
     created_at: row.created_at,
     updated_at: row.updated_at,
   }

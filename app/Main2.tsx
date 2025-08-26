@@ -5,7 +5,6 @@ import { useEmailSubscription } from '@/lib/useEmailSubscription'
 import landingDemoImage from '../public/static/images/landing-demo.jpeg'
 import dashboardDemoImage from '../public/static/images/dashboard-demo.jpg'
 import Image from 'next/image'
-import dataLandingContent from '@/data/landingContent.json'
 import Link from 'next/link'
 import { HiCheckCircle } from 'react-icons/hi2'
 import FeatureIcon from '@/components/FeatureIcon'
@@ -14,8 +13,7 @@ import {
   GalleryImage,
   MainFeaturesSection,
 } from './allset/landing-content/types'
-
-const landingContent = dataLandingContent as unknown as ServicesLandingContent
+import { useLandingContent } from '@/lib/useLandingContent'
 
 const imageMap = {
   landingDemoImage: landingDemoImage,
@@ -587,7 +585,10 @@ const FaqSection = ({ faqs }) => {
 import Main2ContactSection from './Main2ContactSection'
 
 const Main2 = () => {
-  const { hero, mainFeatures, features, cta, gallery, pricing, faqs, contact } = landingContent
+  const { content, loading, error } = useLandingContent<ServicesLandingContent>()
+  if (loading) return null
+  if (error || !content) return null
+  const { hero, mainFeatures, features, cta, gallery, pricing, faqs, contact } = content
 
   return (
     <>

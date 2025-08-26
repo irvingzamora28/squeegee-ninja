@@ -12,7 +12,8 @@
     "analyze": "cross-env ANALYZE=true next build",
     "lint": "next lint --fix --dir pages --dir app --dir components --dir lib --dir layouts --dir scripts",
     "prepare": "husky",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md,mdx}\""
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md,mdx}\"",
+    "seed:landing": "node ./scripts/seed-landing-content.mjs"
   },
   "dependencies": {
     "@google/genai": "^0.7.0",
