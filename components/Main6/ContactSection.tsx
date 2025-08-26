@@ -20,6 +20,14 @@ const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
 
   if (!contact) return null
 
+  const hasContactInfo = Boolean(
+    contact.contactInfo?.email?.address ||
+      contact.contactInfo?.phone?.number ||
+      (contact.contactInfo?.location?.address && contact.contactInfo.location.address.length > 0)
+  )
+  const shouldShowForm = contact.showContactForm !== false && (contact.fields?.length ?? 0) > 0
+  if (!hasContactInfo && !shouldShowForm) return null
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
     setFormData((prev) => ({ ...prev, [name]: value }))
@@ -111,153 +119,158 @@ const ContactSection: React.FC<ContactSectionProps> = ({ contact }) => {
 
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
             {/* Contact Form */}
-            <motion.div className="lg:col-span-2" variants={cardVariants}>
-              <div className="group relative">
-                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 opacity-25 blur transition duration-1000 group-hover:opacity-75"></div>
-                <div className="relative rounded-2xl border border-slate-700/50 bg-slate-800/90 p-8 backdrop-blur-sm">
-                  <AnimatePresence mode="wait">
-                    {isSubmitted ? (
-                      <motion.div
-                        key="success"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        className="flex h-full flex-col items-center justify-center py-12"
-                      >
+            {shouldShowForm && (
+              <motion.div className="lg:col-span-2" variants={cardVariants}>
+                <div className="group relative">
+                  <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-purple-600 to-pink-600 opacity-25 blur transition duration-1000 group-hover:opacity-75"></div>
+                  <div className="relative rounded-2xl border border-slate-700/50 bg-slate-800/90 p-8 backdrop-blur-sm">
+                    <AnimatePresence mode="wait">
+                      {isSubmitted ? (
                         <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
-                          className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg"
+                          key="success"
+                          initial={{ opacity: 0, scale: 0.8 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          className="flex h-full flex-col items-center justify-center py-12"
                         >
-                          <FaCheckCircle className="h-10 w-10 text-white" />
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: 0.2, type: 'spring', stiffness: 200 }}
+                            className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-r from-green-500 to-emerald-500 shadow-lg"
+                          >
+                            <FaCheckCircle className="h-10 w-10 text-white" />
+                          </motion.div>
+                          <motion.h3
+                            className="mb-4 text-3xl font-bold text-white"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                          >
+                            {contact.successMessage}
+                          </motion.h3>
+                          <motion.p
+                            className="mb-8 text-center text-gray-300"
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.6 }}
+                          >
+                            We'll get back to you as soon as possible.
+                          </motion.p>
+                          <motion.button
+                            onClick={() => setIsSubmitted(false)}
+                            className="group relative overflow-hidden rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-3 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.8 }}
+                          >
+                            <span className="relative z-10">Send another message</span>
+                          </motion.button>
                         </motion.div>
-                        <motion.h3
-                          className="mb-4 text-3xl font-bold text-white"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.4 }}
+                      ) : (
+                        <motion.form
+                          key="form"
+                          onSubmit={handleSubmit}
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
                         >
-                          {contact.successMessage}
-                        </motion.h3>
-                        <motion.p
-                          className="mb-8 text-center text-gray-300"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.6 }}
-                        >
-                          We'll get back to you as soon as possible.
-                        </motion.p>
-                        <motion.button
-                          onClick={() => setIsSubmitted(false)}
-                          className="group relative overflow-hidden rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 px-8 py-3 font-semibold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl"
-                          whileHover={{ scale: 1.05 }}
-                          whileTap={{ scale: 0.95 }}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.8 }}
-                        >
-                          <span className="relative z-10">Send another message</span>
-                        </motion.button>
-                      </motion.div>
-                    ) : (
-                      <motion.form
-                        key="form"
-                        onSubmit={handleSubmit}
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                      >
-                        <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
-                          {contact.fields.map((field, index) => (
-                            <motion.div
-                              key={index}
-                              className="flex flex-col"
-                              initial={{ opacity: 0, x: -20 }}
-                              animate={{ opacity: 1, x: 0 }}
-                              transition={{ delay: index * 0.1 }}
-                            >
-                              <label
-                                htmlFor={field.name}
-                                className="mb-2 font-medium text-gray-300"
+                          <div className="mb-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+                            {contact.fields.map((field, index) => (
+                              <motion.div
+                                key={index}
+                                className="flex flex-col"
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: index * 0.1 }}
                               >
-                                {field.label}{' '}
-                                {field.required && <span className="text-red-400">*</span>}
-                              </label>
-                              <input
-                                type={field.type}
-                                id={field.name}
-                                name={field.name}
-                                value={formData[field.name as keyof typeof formData] || ''}
-                                onChange={handleChange}
-                                required={field.required}
-                                className="group relative rounded-lg border border-slate-600 bg-slate-700/50 px-4 py-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all duration-300 hover:border-purple-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                                placeholder={field.label}
-                              />
-                            </motion.div>
-                          ))}
-                        </div>
-
-                        <motion.div
-                          className="mb-8"
-                          initial={{ opacity: 0, x: -20 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: 0.3 }}
-                        >
-                          <label htmlFor="message" className="mb-2 font-medium text-gray-300">
-                            Message <span className="text-red-400">*</span>
-                          </label>
-                          <textarea
-                            id="message"
-                            name="message"
-                            value={formData.message}
-                            onChange={handleChange}
-                            required
-                            rows={5}
-                            className="w-full resize-none rounded-lg border border-slate-600 bg-slate-700/50 px-4 py-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all duration-300 hover:border-purple-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
-                            placeholder="Your message"
-                          />
-                        </motion.div>
-
-                        <motion.button
-                          type="submit"
-                          disabled={isSubmitting}
-                          className={`group relative w-full overflow-hidden rounded-lg bg-gradient-to-r from-red-600 to-pink-600 px-6 py-4 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl ${isSubmitting ? 'cursor-not-allowed opacity-70' : ''}`}
-                          whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
-                          whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.4 }}
-                        >
-                          <span className="relative z-10 flex items-center justify-center">
-                            {isSubmitting ? (
-                              <>
-                                <motion.div
-                                  className="mr-3 h-5 w-5 rounded-full border-2 border-white border-t-transparent"
-                                  animate={{ rotate: 360 }}
-                                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                                <label
+                                  htmlFor={field.name}
+                                  className="mb-2 font-medium text-gray-300"
+                                >
+                                  {field.label}{' '}
+                                  {field.required && <span className="text-red-400">*</span>}
+                                </label>
+                                <input
+                                  type={field.type}
+                                  id={field.name}
+                                  name={field.name}
+                                  value={formData[field.name as keyof typeof formData] || ''}
+                                  onChange={handleChange}
+                                  required={field.required}
+                                  className="group relative rounded-lg border border-slate-600 bg-slate-700/50 px-4 py-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all duration-300 hover:border-purple-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                                  placeholder={field.label}
                                 />
-                                Sending...
-                              </>
-                            ) : (
-                              <>
-                                <FaPaperPlane className="mr-2 h-5 w-5" />
-                                {contact.submitLabel}
-                              </>
-                            )}
-                          </span>
-                        </motion.button>
-                      </motion.form>
-                    )}
-                  </AnimatePresence>
+                              </motion.div>
+                            ))}
+                          </div>
+
+                          <motion.div
+                            className="mb-8"
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: 0.3 }}
+                          >
+                            <label htmlFor="message" className="mb-2 font-medium text-gray-300">
+                              Message <span className="text-red-400">*</span>
+                            </label>
+                            <textarea
+                              id="message"
+                              name="message"
+                              value={formData.message}
+                              onChange={handleChange}
+                              required
+                              rows={5}
+                              className="w-full resize-none rounded-lg border border-slate-600 bg-slate-700/50 px-4 py-3 text-white placeholder-gray-400 backdrop-blur-sm transition-all duration-300 hover:border-purple-400 focus:border-purple-500 focus:ring-2 focus:ring-purple-500 focus:outline-none"
+                              placeholder="Your message"
+                            />
+                          </motion.div>
+
+                          <motion.button
+                            type="submit"
+                            disabled={isSubmitting}
+                            className={`group relative w-full overflow-hidden rounded-lg bg-gradient-to-r from-red-600 to-pink-600 px-6 py-4 font-bold text-white shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl ${isSubmitting ? 'cursor-not-allowed opacity-70' : ''}`}
+                            whileHover={{ scale: isSubmitting ? 1 : 1.02 }}
+                            whileTap={{ scale: isSubmitting ? 1 : 0.98 }}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.4 }}
+                          >
+                            <span className="relative z-10 flex items-center justify-center">
+                              {isSubmitting ? (
+                                <>
+                                  <motion.div
+                                    className="mr-3 h-5 w-5 rounded-full border-2 border-white border-t-transparent"
+                                    animate={{ rotate: 360 }}
+                                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                                  />
+                                  Sending...
+                                </>
+                              ) : (
+                                <>
+                                  <FaPaperPlane className="mr-2 h-5 w-5" />
+                                  {contact.submitLabel}
+                                </>
+                              )}
+                            </span>
+                          </motion.button>
+                        </motion.form>
+                      )}
+                    </AnimatePresence>
+                  </div>
                 </div>
-              </div>
-            </motion.div>
+              </motion.div>
+            )}
 
             {/* Contact Info */}
-            <motion.div className="space-y-6" variants={cardVariants}>
+            <motion.div
+              className={shouldShowForm ? 'lg:col-span-1' : 'lg:col-span-3'}
+              variants={cardVariants}
+            >
               <div className="group relative">
-                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-blue-600 to-purple-600 opacity-25 blur transition duration-1000 group-hover:opacity-75"></div>
+                <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-indigo-600 to-blue-600 opacity-25 blur transition duration-1000 group-hover:opacity-75"></div>
                 <div className="relative rounded-2xl border border-slate-700/50 bg-slate-800/90 p-8 backdrop-blur-sm">
                   <h3 className="mb-8 bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-2xl font-bold text-transparent text-white">
                     {contact?.contactInfo?.title}
