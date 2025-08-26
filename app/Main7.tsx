@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import dataLandingContent from '@/data/landingContent.json'
 import { ServicesLandingContent } from './allset/landing-content/types'
 import { motion } from 'framer-motion'
 
@@ -16,12 +15,13 @@ import {
   ProjectsSection,
   ContactSection,
 } from '@/components/Main7'
-
-const landingContent = dataLandingContent as unknown as ServicesLandingContent
+import { useLandingContent } from '@/lib/useLandingContent'
 
 const Main7: React.FC = () => {
-  const { hero, features, services, gallery, pricing, testimonials, contact, projects } =
-    landingContent
+  const { content, loading, error } = useLandingContent<ServicesLandingContent>()
+  if (loading) return null
+  if (error || !content) return null
+  const { hero, features, services, gallery, pricing, testimonials, contact, projects } = content
 
   return (
     <div className="min-h-screen bg-white text-slate-900 dark:bg-slate-900 dark:text-white">

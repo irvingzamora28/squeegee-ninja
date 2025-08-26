@@ -4,7 +4,6 @@ import { useState } from 'react'
 import landingDemoImage from '../public/static/images/landing-demo.jpeg'
 import dashboardDemoImage from '../public/static/images/dashboard-demo.jpg'
 import Image from 'next/image'
-import dataLandingContent from '@/data/landingContent.json'
 import type { ServicesLandingContent } from './allset/landing-content/types' // adjust path if needed
 import Link from 'next/link'
 import GallerySection from '@/components/GallerySection'
@@ -12,13 +11,11 @@ import GallerySection from '@/components/GallerySection'
 import { useEmailSubscription } from '@/lib/useEmailSubscription'
 import FeatureIcon from '@/components/FeatureIcon'
 import { HiCheckCircle } from 'react-icons/hi2'
-
-const landingContent = dataLandingContent as unknown as ServicesLandingContent
+import { useLandingContent } from '@/lib/useLandingContent'
 
 const MAX_DISPLAY = 3
 
-const HeroSection = () => {
-  const { hero } = landingContent
+const HeroSection = ({ hero }: { hero: ServicesLandingContent['hero'] }) => {
   return (
     <>
       <div className="mx-auto max-w-7xl px-4 pt-20 pb-16 text-center sm:px-6 lg:px-8 lg:pt-32">
@@ -55,8 +52,12 @@ const imageMap = {
   dashboardDemoImage: dashboardDemoImage,
 }
 
-const FeaturesSection = () => {
-  const [selectedFeature, setSelectedFeature] = useState(landingContent.mainFeatures.items[0])
+const FeaturesSection = ({
+  mainFeatures,
+}: {
+  mainFeatures: ServicesLandingContent['mainFeatures']
+}) => {
+  const [selectedFeature, setSelectedFeature] = useState(mainFeatures.items[0])
 
   return (
     <section
@@ -72,7 +73,7 @@ const FeaturesSection = () => {
               role="tablist"
               aria-orientation="vertical"
             >
-              {landingContent.mainFeatures.items.map((feature) => {
+              {mainFeatures.items.map((feature) => {
                 return (
                   <div
                     key={feature.title}
@@ -131,9 +132,11 @@ const FeaturesSection = () => {
   )
 }
 
-const SecondaryFeaturesSection = () => {
-  const { features } = landingContent
-
+const SecondaryFeaturesSection = ({
+  features,
+}: {
+  features: ServicesLandingContent['features']
+}) => {
   if (!features || features.items.length === 0) return null
 
   return (
@@ -200,8 +203,7 @@ const SecondaryFeaturesSection = () => {
   )
 }
 
-const CallToActionSection = () => {
-  const { cta } = landingContent
+const CallToActionSection = ({ cta }: { cta: ServicesLandingContent['cta'] }) => {
   const [email, setEmail] = useState('')
 
   const { subscribe, status, message } = useEmailSubscription()
@@ -267,8 +269,11 @@ const CallToActionSection = () => {
   )
 }
 
-const TestimonialsSection = () => {
-  const testimonials = landingContent.testimonials
+const TestimonialsSection = ({
+  testimonials,
+}: {
+  testimonials: ServicesLandingContent['testimonials']
+}) => {
   if (!testimonials) return null
 
   return (
@@ -331,8 +336,7 @@ const TestimonialsSection = () => {
   )
 }
 
-const FaqSection = () => {
-  const { faqs } = landingContent
+const FaqSection = ({ faqs }: { faqs: ServicesLandingContent['faqs'] }) => {
   const faqStyle = {
     color: 'transparent',
   }
@@ -377,8 +381,7 @@ const FaqSection = () => {
   )
 }
 
-const PricingSection = () => {
-  const pricing = landingContent.pricing ?? null
+const PricingSection = ({ pricing }: { pricing: ServicesLandingContent['pricing'] }) => {
   if (!pricing) return null
 
   return (
@@ -453,20 +456,25 @@ const PricingSection = () => {
 import Main3ContactSection from './Main3ContactSection'
 
 const Main3 = () => {
+  const { content, loading, error } = useLandingContent<ServicesLandingContent>()
+  if (loading) return null
+  if (error || !content) return null
   return (
     <div>
       <main>
-        {landingContent.hero && <HeroSection />}
-        {landingContent.mainFeatures?.items?.length > 0 && <FeaturesSection />}
-        {landingContent.features?.items?.length > 0 && <SecondaryFeaturesSection />}
-        {landingContent.cta && <CallToActionSection />}
-        {landingContent.gallery && (
-          <GallerySection gallery={landingContent.gallery} variant="dark" />
+        {content.hero && <HeroSection hero={content.hero} />}
+        {content.mainFeatures?.items?.length > 0 && (
+          <FeaturesSection mainFeatures={content.mainFeatures} />
         )}
-        {landingContent.testimonials && <TestimonialsSection />}
-        {landingContent.pricing && <PricingSection />}
-        {landingContent.faqs?.questions?.length > 0 && <FaqSection />}
-        {landingContent.contact && <Main3ContactSection contact={landingContent.contact} />}
+        {content.features?.items?.length > 0 && (
+          <SecondaryFeaturesSection features={content.features} />
+        )}
+        {content.cta && <CallToActionSection cta={content.cta} />}
+        {content.gallery && <GallerySection gallery={content.gallery} variant="dark" />}
+        {content.testimonials && <TestimonialsSection testimonials={content.testimonials} />}
+        {content.pricing && <PricingSection pricing={content.pricing} />}
+        {content.faqs?.questions?.length > 0 && <FaqSection faqs={content.faqs} />}
+        {content.contact && <Main3ContactSection contact={content.contact} />}
       </main>
     </div>
   )

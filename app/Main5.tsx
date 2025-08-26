@@ -13,14 +13,14 @@ import {
   FaqSection,
   ContactSection,
 } from '@/components/Main5'
-import dataLandingContent from '@/data/landingContent.json'
 import { ProductSaaSLandingContent } from './allset/landing-content/types'
-
-const landingContent = dataLandingContent as unknown as ProductSaaSLandingContent
+import { useLandingContent } from '@/lib/useLandingContent'
 
 const Main5 = () => {
-  const { hero, mainFeatures, features, cta, pricing, contact, faqs, testimonials, stats } =
-    landingContent
+  const { content, loading, error } = useLandingContent<ProductSaaSLandingContent>()
+  if (loading) return null
+  if (error || !content) return null
+  const { hero, mainFeatures, features, cta, pricing, contact, faqs, testimonials, stats } = content
   return (
     <div className="min-h-screen overflow-hidden bg-gradient-to-b from-gray-50 to-white text-gray-900 dark:from-gray-900 dark:to-gray-800 dark:text-gray-100">
       <HeroSection hero={hero} mainFeatures={mainFeatures.items} />
