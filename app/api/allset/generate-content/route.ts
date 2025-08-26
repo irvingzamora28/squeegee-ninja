@@ -5,6 +5,7 @@ import { llmService } from '@/lib/llm'
 import { LandingContent } from '@/lib/llm/types'
 import siteMetadata from '@/data/siteMetadata'
 import { generateImagesForLandingContent } from '@/lib/llm/generateLandingImages'
+import db from '@/lib/db'
 
 // For static export, we need to handle this differently
 export const dynamic = 'error'
@@ -68,8 +69,8 @@ export async function POST(request: NextRequest) {
 
     await generateImagesForLandingContent(contentJson)
 
-    // Save the updated content to the file
-    await fs.writeFile(landingContentFilePath, JSON.stringify(contentJson, null, 2), 'utf-8')
+    // Persist generated content to DB
+    await db.updateSiteSettings({ landing_content: contentJson as unknown })
 
     return NextResponse.json({
       success: true,

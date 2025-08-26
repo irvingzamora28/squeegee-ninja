@@ -4,6 +4,7 @@ import path from 'path'
 import { llmService } from '@/lib/llm'
 import { BlogTitleSuggestion } from '@/lib/llm/types'
 import siteMetadata from '@/data/siteMetadata'
+import db from '@/lib/db'
 
 // For static export, we need to handle this differently
 export const dynamic = 'error'
@@ -13,15 +14,21 @@ const landingContentFilePath = path.join(process.cwd(), 'data', 'landingContent.
 
 export async function POST(request: NextRequest) {
   try {
-    // Load the landing content
-    const landingContent = await fs.readFile(landingContentFilePath, 'utf-8')
+    // Load the landing content from DB (fallback to file during migration)
+    const settings = await db.getSiteSettings()
+    let landingContentStr: string
+    if (settings.landing_content) {
+      landingContentStr = JSON.stringify(settings.landing_content)
+    } else {
+      landingContentStr = await fs.readFile(landingContentFilePath, 'utf-8')
+    }
 
     // Use the site's language setting
     const contentLanguage = siteMetadata.language
     console.log(`API: Generating blog titles in site language: ${contentLanguage}`)
 
     // Generate blog titles using the LLM service with the site language
-    const result = await llmService.generateBlogTitles(landingContent, contentLanguage)
+    const result = await llmService.generateBlogTitles(landingContentStr, contentLanguage)
 
     if (result.error) {
       return NextResponse.json({ success: false, message: result.error }, { status: 500 })

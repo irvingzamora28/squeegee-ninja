@@ -33,3 +33,18 @@ create table if not exists allset_cta_config (
 
 -- alter table allset_contact_submissions enable row level security;
 -- create policy "Allow all" on allset_contact_submissions for all using (true);
+
+-- Site settings (single row)
+create table if not exists allset_site_settings (
+  id bigint primary key check (id = 1),
+  whatsapp_enabled integer not null default 0,
+  whatsapp_phone text not null default '',
+  whatsapp_message text not null default '',
+  whatsapp_position text not null default 'bottom-right',
+  assistant_enabled integer not null default 0,
+  booking_widget_enabled integer not null default 1,
+  site_language text not null default 'en-us',
+  landing_content jsonb,
+  created_at timestamp with time zone default now(),
+  updated_at timestamp with time zone default now()
+);

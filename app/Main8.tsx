@@ -1,7 +1,6 @@
 'use client'
 
 import React from 'react'
-import dataLandingContent from '@/data/landingContent.json'
 import { ServicesLandingContent } from './allset/landing-content/types'
 
 // Main8 components (new)
@@ -23,10 +22,12 @@ import {
   StatsSection,
 } from '@/components/Main5'
 import { ProjectsSection } from '@/components/Main7'
-
-const landingContent = dataLandingContent as unknown as ServicesLandingContent
+import { useLandingContent } from '@/lib/useLandingContent'
 
 const Main8 = () => {
+  const { content, loading, error } = useLandingContent<ServicesLandingContent>()
+  if (loading) return null
+  if (error || !content) return null
   const {
     hero,
     mainFeatures,
@@ -40,7 +41,7 @@ const Main8 = () => {
     services,
     projects,
     stats,
-  } = landingContent
+  } = content
 
   return (
     <div className="min-h-screen bg-white text-gray-900 dark:bg-gray-950 dark:text-white">
