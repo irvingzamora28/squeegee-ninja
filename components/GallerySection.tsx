@@ -14,6 +14,7 @@ interface GallerySectionProps {
 
 const GallerySection: React.FC<GallerySectionProps> = ({ gallery, variant = 'light' }) => {
   const [selectedImage, setSelectedImage] = useState<GalleryImage | null>(null)
+  const isVideo = (src: string) => /\.(mp4|webm|ogg)$/i.test(src)
 
   const openModal = (image: GalleryImage) => {
     setSelectedImage(image)
@@ -89,13 +90,25 @@ const GallerySection: React.FC<GallerySectionProps> = ({ gallery, variant = 'lig
               aria-label={`View ${image.alt} in large mode`}
             >
               <div className="aspect-[4/3] w-full overflow-hidden">
-                <Image
-                  src={image.src}
-                  alt={image.alt}
-                  width={600}
-                  height={450}
-                  className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
-                />
+                {isVideo(image.src) ? (
+                  <video
+                    src={image.src}
+                    className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+                    muted
+                    playsInline
+                    loop
+                    autoPlay
+                    aria-label={image.alt || 'Gallery video'}
+                  />
+                ) : (
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    width={600}
+                    height={450}
+                    className="h-full w-full object-cover object-center transition-transform duration-300 group-hover:scale-105"
+                  />
+                )}
               </div>
               <div className="p-4">
                 <p
@@ -144,20 +157,41 @@ const GallerySection: React.FC<GallerySectionProps> = ({ gallery, variant = 'lig
             </button>
             <div className="flex h-[calc(100%-60px)] w-full items-center justify-center overflow-auto p-0 sm:p-4">
               <div className="relative flex h-full w-full items-center justify-center">
-                <Image
-                  src={selectedImage.src}
-                  alt={selectedImage.alt}
-                  width={1200}
-                  height={900}
-                  className="h-auto w-full object-contain sm:max-h-full sm:w-auto"
-                  style={{
-                    maxWidth: '100%',
-                    maxHeight: '100%',
-                    width: 'auto',
-                    height: 'auto',
-                  }}
-                  priority
-                />
+                {isVideo(selectedImage.src) ? (
+                  <video
+                    src={selectedImage.src}
+                    className="h-auto w-full object-contain sm:max-h-full sm:w-auto"
+                    controls
+                    autoPlay
+                    playsInline
+                    muted
+                    // @ts-expect-error optional fields allowed in data
+                    poster={selectedImage.poster}
+                    // @ts-expect-error optional fields allowed in data
+                    crossOrigin={selectedImage.crossOrigin}
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      width: 'auto',
+                      height: 'auto',
+                    }}
+                  />
+                ) : (
+                  <Image
+                    src={selectedImage.src}
+                    alt={selectedImage.alt}
+                    width={1200}
+                    height={900}
+                    className="h-auto w-full object-contain sm:max-h-full sm:w-auto"
+                    style={{
+                      maxWidth: '100%',
+                      maxHeight: '100%',
+                      width: 'auto',
+                      height: 'auto',
+                    }}
+                    priority
+                  />
+                )}
               </div>
             </div>
             {selectedImage.caption && (
