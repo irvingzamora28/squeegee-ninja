@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useRef, useState } from 'react'
+import React, { useState } from 'react'
 import Image from 'next/image'
 import { Space_Grotesk, Inter } from 'next/font/google'
 import { GallerySection as GallerySectionType } from 'app/allset/landing-content/types'
@@ -15,6 +15,8 @@ interface Props {
 const GallerySection: React.FC<Props> = ({ gallery }) => {
   const { title, description, images = [] } = gallery || {}
   const [openIndex, setOpenIndex] = useState<number | null>(null)
+
+  const isVideo = (src: string) => /\.(mp4|webm|ogg)$/i.test(src)
 
   if (!images.length) return null
 
@@ -58,12 +60,24 @@ const GallerySection: React.FC<Props> = ({ gallery }) => {
                 }}
               />
               <div className="relative aspect-[4/3] w-full overflow-hidden">
-                <Image
-                  src={img.src}
-                  alt={img.alt || 'Gallery image'}
-                  fill
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                {isVideo(img.src) ? (
+                  <video
+                    src={img.src}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    muted
+                    playsInline
+                    loop
+                    autoPlay
+                    aria-label={img.alt || 'Gallery video'}
+                  />
+                ) : (
+                  <Image
+                    src={img.src}
+                    alt={img.alt || 'Gallery image'}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                )}
               </div>
               {img.caption ? (
                 <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/60 via-black/20 to-transparent p-3 text-left text-xs text-white">
@@ -93,7 +107,7 @@ const GallerySection: React.FC<Props> = ({ gallery }) => {
             className="relative max-h-[85vh] w-full max-w-5xl"
             role="dialog"
             aria-modal="true"
-            aria-label="Image preview"
+            aria-label={isVideo(images[openIndex].src) ? 'Video preview' : 'Image preview'}
           >
             <button
               onClick={() => setOpenIndex(null)}
@@ -108,13 +122,28 @@ const GallerySection: React.FC<Props> = ({ gallery }) => {
               </svg>
             </button>
             <div className="relative aspect-[16/10] w-full overflow-hidden rounded-xl">
-              <Image
-                src={images[openIndex].src}
-                alt={images[openIndex].alt || 'Gallery image'}
-                fill
-                className="object-contain"
-                priority
-              />
+              {isVideo(images[openIndex].src) ? (
+                <video
+                  src={images[openIndex].src}
+                  className="h-full w-full object-contain"
+                  controls
+                  autoPlay
+                  playsInline
+                  muted
+                  // @ts-expect-error optional fields allowed in data
+                  poster={images[openIndex].poster}
+                  // @ts-expect-error optional fields allowed in data
+                  crossOrigin={images[openIndex].crossOrigin}
+                />
+              ) : (
+                <Image
+                  src={images[openIndex].src}
+                  alt={images[openIndex].alt || 'Gallery image'}
+                  fill
+                  className="object-contain"
+                  priority
+                />
+              )}
             </div>
             {images[openIndex].caption ? (
               <div className="mt-3 text-center text-sm text-white/90">

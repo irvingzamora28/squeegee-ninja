@@ -11,7 +11,7 @@ const ContentSecurityPolicy = `
   script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is cdn.jsdelivr.net;
   style-src 'self' 'unsafe-inline' cdn.tailwindcss.com cdnjs.cloudflare.com;
   img-src * blob: data:;
-  media-src *.s3.amazonaws.com;
+  media-src 'self' blob: data: *.s3.amazonaws.com;
   connect-src *;
   font-src 'self' cdnjs.cloudflare.com;
   frame-src giscus.app

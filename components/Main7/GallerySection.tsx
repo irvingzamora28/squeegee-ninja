@@ -11,6 +11,7 @@ interface Props {
 }
 
 const GallerySection: React.FC<Props> = ({ gallery }) => {
+  const isVideo = (src: string) => /\.(mp4|webm|ogg)$/i.test(src)
   return (
     <section id="gallery" className="relative bg-white py-24 dark:bg-slate-900">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(circle_at_85%_10%,rgba(168,85,247,0.08),transparent_40%)]" />
@@ -42,13 +43,25 @@ const GallerySection: React.FC<Props> = ({ gallery }) => {
               className="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition-all hover:-translate-y-1 hover:shadow-md dark:border-slate-700 dark:bg-slate-800"
             >
               <div className="relative aspect-[4/3] w-full">
-                <Image
-                  src={img.src}
-                  alt={img.alt}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+                {isVideo(img.src) ? (
+                  <video
+                    src={img.src}
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+                    muted
+                    playsInline
+                    loop
+                    autoPlay
+                    aria-label={img.alt || 'Gallery video'}
+                  />
+                ) : (
+                  <Image
+                    src={img.src}
+                    alt={img.alt}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover transition-transform duration-500 group-hover:scale-105"
+                  />
+                )}
               </div>
               <figcaption className="px-4 py-3 text-sm text-slate-600 dark:text-slate-300">
                 {img.caption}
